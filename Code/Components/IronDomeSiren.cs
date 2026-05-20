@@ -6,6 +6,8 @@ namespace IronDome;
 // Hold-time: siren keeps playing for SirenHoldTime seconds after last detected target.
 public sealed class IronDomeSiren : Component
 {
+    [Property] public SoundEvent SirenSound { get; set; }
+
     private SoundHandle _handle;
     private bool _playing;
     private float _stopAt;
@@ -26,9 +28,12 @@ public sealed class IronDomeSiren : Component
     {
         if ( !_playing )
         {
-            _handle = Sound.Play( IronDomeConsts.SirenSoundPath, WorldPosition );
-            if ( _handle != null )
-                _handle.Volume = IronDomeConVars.SirenVolume;
+            if ( SirenSound is not null )
+            {
+                _handle = Sound.Play( SirenSound, WorldPosition );
+                if ( _handle != null )
+                    _handle.Volume = IronDomeConVars.SirenVolume;
+            }
             _playing = true;
         }
         _stopAt = Time.Now + IronDomeConsts.SirenHoldTime;

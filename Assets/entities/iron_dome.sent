@@ -1,0 +1,9 @@
+{
+  "Prefab": "prefabs/iron_dome.prefab",
+  "Title": "Iron Dome",
+  "Description": "Missile defense battery. Set iron_dome_admin_mode 1 for infinite missiles + extended range.",
+  "Category": "Iron Dome",
+  "IncludeCode": true,
+  "__references": [],
+  "__version": 0
+}

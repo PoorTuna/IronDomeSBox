@@ -5,7 +5,7 @@ s&box port of the [IronDomeGmod](https://github.com/PoorTuna/IronDomeGmod) addon
 ## Features
 
 - Predictive intercept using a quadratic solver for accurate target leading
-- Three variants: Neutral, Protective, Admin
+- Optional admin mode (infinite missiles, extended range) via ConVar
 - Coordinated target claiming across multiple domes so two units never engage the same target
 - 20-missile magazine with a 10-second reload cycle
 - Authentic IDF Red Alert siren with hold-off timer
@@ -16,16 +16,9 @@ s&box port of the [IronDomeGmod](https://github.com/PoorTuna/IronDomeGmod) addon
 ## Usage
 
 1. Open the project in s&box.
-2. Drop `iron_dome_neutral.prefab`, `iron_dome_protective.prefab`, or `iron_dome_admin.prefab` into a scene.
+2. Spawn the "Iron Dome" entity from the spawnmenu.
 3. Tag any threat GameObject with `interceptable`. The dome scans for `Rigidbody` components carrying the tag above its own Z position.
-
-### Variants
-
-| Prefab | Behavior |
-|---|---|
-| `iron_dome_neutral.prefab` | Engages every `interceptable` target |
-| `iron_dome_protective.prefab` | Skips projectiles owned by the dome's network owner |
-| `iron_dome_admin.prefab` | Infinite missiles, no reload, 15000-unit radius |
+4. To run admin mode, set `iron_dome_admin_mode 1` in console.
 
 ### ConVars
 
@@ -35,8 +28,11 @@ s&box port of the [IronDomeGmod](https://github.com/PoorTuna/IronDomeGmod) addon
 | `iron_dome_siren_volume` | 1.0 | Siren volume |
 | `iron_dome_reload_time` | 10 | Seconds per reload cycle |
 | `iron_dome_missiles_per_reload` | 20 | Missiles per reload |
-| `iron_dome_missile_speed` | 3500 | Interceptor speed (units/s) |
-| `iron_dome_detection_radius` | 8000 | Scan radius (Admin variant overrides to 15000) |
+| `iron_dome_missile_speed` | 6000 | Interceptor speed (units/s) |
+| `iron_dome_detection_radius` | 8000 | Scan radius (Admin mode overrides to 15000) |
+| `iron_dome_target_all_rigidbodies` | true | Engage any rigidbody prop overhead |
+| `iron_dome_target_players` | false | Also engage players |
+| `iron_dome_admin_mode` | false | Infinite missiles, no reload, 15000-unit radius |
 
 ## Project Layout
 

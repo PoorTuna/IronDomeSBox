@@ -1,16 +1,15 @@
 using Sandbox;
+using System;
 using System.Collections.Generic;
 
 namespace IronDome;
 
-// Merged port of lua/entities/iron_dome{,_protective,_admin}/init.lua
-// Mode enum controls variant behavior; set via [Property] in prefab.
+// Port of lua/entities/iron_dome/init.lua. Admin behavior gated by
+// the iron_dome_admin_mode ConVar instead of a per-entity property.
 public sealed class IronDome : Component
 {
-    [Property] public IronDomeMode Mode { get; set; } = IronDomeMode.Neutral;
-
-    // Assign the iron_dome_missile prefab in editor
     [Property] public GameObject MissilePrefab { get; set; }
+    [Property] public SoundEvent LeverSound { get; set; }
 
     public Dictionary<GameObject, IronDomeMissile> ActiveMissiles { get; } = new();
 
@@ -19,21 +18,34 @@ public sealed class IronDome : Component
     private bool _reloading;
     private TimeUntil _reloadComplete;
     private TimeUntil _nextScan;
+    private bool _wasAdmin;
+
+    private const int   DefaultMissilesPerReload = 20;
+    private const float DefaultDetectionRadius   = 8000f;
+    private const float DefaultReloadTime        = 10f;
+
+    private static int   SafeMissilesPerReload => Math.Max( 1, IronDomeConVars.MissilesPerReload > 0 ? IronDomeConVars.MissilesPerReload : DefaultMissilesPerReload );
+    private static float SafeDetectionRadius   => IronDomeConVars.DetectionRadius > 0f ? IronDomeConVars.DetectionRadius : DefaultDetectionRadius;
+    private static float SafeReloadTime        => IronDomeConVars.ReloadTime      > 0f ? IronDomeConVars.ReloadTime      : DefaultReloadTime;
+
+    public static bool IsAdmin => IronDomeConVars.AdminMode;
 
     private float EffectiveDetectionRadius =>
-        Mode == IronDomeMode.Admin
-            ? IronDomeConsts.AdminDetectionRadius
-            : IronDomeConVars.DetectionRadius;
+        IsAdmin ? IronDomeConsts.AdminDetectionRadius : SafeDetectionRadius;
 
     protected override void OnStart()
     {
         _siren = Components.GetOrCreate<IronDomeSiren>();
-        _missilesLeft = Mode == IronDomeMode.Admin ? int.MaxValue : IronDomeConVars.MissilesPerReload;
+        _wasAdmin = IsAdmin;
+        _missilesLeft = IsAdmin ? int.MaxValue : SafeMissilesPerReload;
     }
 
     protected override void OnUpdate()
     {
         if ( IsProxy ) return;
+
+        SyncAdminState();
+
         if ( !_nextScan ) return;
         _nextScan = IronDomeConsts.ScanInterval;
 
@@ -48,12 +60,21 @@ public sealed class IronDome : Component
 
             hasTarget = true;
             MissileFactory.CreateInterceptor( this, go );
-            if ( Mode != IronDomeMode.Admin )
+            if ( !IsAdmin )
                 _missilesLeft--;
             break;
         }
 
         _siren.UpdateSiren( hasTarget );
+    }
+
+    private void SyncAdminState()
+    {
+        var isAdmin = IsAdmin;
+        if ( isAdmin == _wasAdmin ) return;
+        _wasAdmin = isAdmin;
+        _missilesLeft = isAdmin ? int.MaxValue : SafeMissilesPerReload;
+        _reloading = false;
     }
 
     private IEnumerable<GameObject> EnumerateScanCandidates()
@@ -73,17 +94,17 @@ public sealed class IronDome : Component
         if ( _reloading )
         {
             if ( !_reloadComplete ) return false;
-            _missilesLeft = IronDomeConVars.MissilesPerReload;
+            _missilesLeft = SafeMissilesPerReload;
             _reloading = false;
             return true;
         }
 
-        if ( Mode != IronDomeMode.Admin && _missilesLeft <= 0 )
+        if ( !IsAdmin && _missilesLeft <= 0 )
         {
             _reloading = true;
-            if ( !string.IsNullOrEmpty( IronDomeConsts.LeverSoundPath ) )
-                Sound.Play( IronDomeConsts.LeverSoundPath, WorldPosition );
-            _reloadComplete = IronDomeConVars.ReloadTime;
+            if ( LeverSound is not null )
+                Sound.Play( LeverSound, WorldPosition );
+            _reloadComplete = SafeReloadTime;
             return false;
         }
 

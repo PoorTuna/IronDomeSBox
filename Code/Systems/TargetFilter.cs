@@ -33,16 +33,6 @@ public static class TargetFilter
             if ( !hasInterceptableTag && !allowAnyRigidbody ) return false;
         }
 
-        // Protective mode: ignore owner's own projectiles.
-        // Requires both target and dome to have a valid network owner to compare.
-        if ( dome.Mode == IronDomeMode.Protective )
-        {
-            var domeOwner   = dome.GameObject.Network?.OwnerConnection;
-            var targetOwner = target.Network?.OwnerConnection;
-            if ( domeOwner is not null && targetOwner is not null && domeOwner == targetOwner )
-                return false;
-        }
-
         // Target must be above the dome (skipped for players — they walk on the ground)
         if ( !isPlayer && target.WorldPosition.z <= dome.WorldPosition.z ) return false;
 
@@ -60,4 +50,5 @@ public static class TargetFilter
 
         return true;
     }
+
 }

@@ -9,9 +9,17 @@ public sealed class IronDomeMissile : Component
 {
     public IronDome Dome { get; set; }
 
+    [Property] public SoundEvent LaunchSound { get; set; }
+    [Property] public SoundEvent LoopSound { get; set; }
+    [Property] public SoundEvent ExplosionCloseSound { get; set; }
+    [Property] public SoundEvent ExplosionDistantSound { get; set; }
+
     private GameObject _target;
     private bool _launched;
     private SoundHandle _loopHandle;
+
+    private const float DefaultMissileSpeed = 6000f;
+    private static float SafeMissileSpeed => IronDomeConVars.MissileSpeed > 0f ? IronDomeConVars.MissileSpeed : DefaultMissileSpeed;
 
     public void SetTarget( GameObject target )
     {
@@ -19,8 +27,8 @@ public sealed class IronDomeMissile : Component
         _target = target;
         _launched = true;
 
-        Sound.Play( IronDomeConsts.MissileLaunchSoundPath, WorldPosition );
-        _loopHandle = Sound.Play( IronDomeConsts.MissileLoopSoundPath, WorldPosition );
+        if ( LaunchSound is not null ) Sound.Play( LaunchSound, WorldPosition );
+        if ( LoopSound is not null ) _loopHandle = Sound.Play( LoopSound, WorldPosition );
 
         var rb = Components.Get<Rigidbody>();
         if ( rb is null ) return;
@@ -28,7 +36,7 @@ public sealed class IronDomeMissile : Component
         var targetVel = _target.Components.Get<Rigidbody>()?.Velocity ?? Vector3.Zero;
         var dir = (_target.WorldPosition + targetVel * 0.2f - WorldPosition).Normal;
 
-        rb.Velocity = dir * IronDomeConVars.MissileSpeed;
+        rb.Velocity = dir * SafeMissileSpeed;
         WorldRotation = Rotation.LookAt( dir, Vector3.Up );
     }
 
@@ -46,12 +54,12 @@ public sealed class IronDomeMissile : Component
         var targetVel = _target.Components.Get<Rigidbody>()?.Velocity ?? Vector3.Zero;
         var interceptPoint = InterceptPredictor.PredictInterceptExact(
             WorldPosition,
-            IronDomeConVars.MissileSpeed,
+            SafeMissileSpeed,
             _target.WorldPosition,
             targetVel );
 
         var dir = (interceptPoint - WorldPosition).Normal;
-        rb.Velocity = dir * IronDomeConVars.MissileSpeed;
+        rb.Velocity = dir * SafeMissileSpeed;
         WorldRotation = Rotation.LookAt( dir, Vector3.Up );
 
         if ( _loopHandle != null )
@@ -63,13 +71,33 @@ public sealed class IronDomeMissile : Component
 
     private void Detonate()
     {
-        var close   = Sound.Play( IronDomeConsts.ExplosionCloseSoundPath,   WorldPosition );
-        var distant = Sound.Play( IronDomeConsts.ExplosionDistantSoundPath, WorldPosition );
-        if ( close   != null ) close.Pitch   = Game.Random.Float( 0.95f, 1.05f );
-        if ( distant != null ) distant.Pitch = Game.Random.Float( 0.95f, 1.05f );
+        if ( ExplosionCloseSound is not null )
+        {
+            var close = Sound.Play( ExplosionCloseSound, WorldPosition );
+            if ( close != null ) close.Pitch = Game.Random.Float( 0.95f, 1.05f );
+        }
+        if ( ExplosionDistantSound is not null )
+        {
+            var distant = Sound.Play( ExplosionDistantSound, WorldPosition );
+            if ( distant != null ) distant.Pitch = Game.Random.Float( 0.95f, 1.05f );
+        }
 
+        // Players: route through IDamageable so respawn flow stays intact.
+        // Props: hard delete the GameObject so they don't dribble out gibs that
+        // re-enter the scan set and burn missiles forever.
         if ( _target is not null && _target.IsValid )
-            _target.Destroy();
+        {
+            if ( _target.Components.TryGet<PlayerController>( out _ )
+                 && _target.Components.TryGet<Component.IDamageable>( out var damageable, FindMode.EverythingInSelfAndChildren ) )
+            {
+                var dmg = new DamageInfo( 9999, Dome?.GameObject, null );
+                damageable.OnDamage( dmg );
+            }
+            else
+            {
+                _target.Destroy();
+            }
+        }
 
         // TODO: spawn explosion VFX — assign an ExplosionPrefab [Property] and clone it here
 

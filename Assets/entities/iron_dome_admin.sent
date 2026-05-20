@@ -1,9 +1,0 @@
-{
-  "Prefab": "prefabs/iron_dome_admin.prefab",
-  "Title": "Iron Dome (Admin)",
-  "Description": "Infinite missiles, no reload, 15000-unit detection radius.",
-  "Category": "Iron Dome",
-  "IncludeCode": true,
-  "__references": [],
-  "__version": 0
-}

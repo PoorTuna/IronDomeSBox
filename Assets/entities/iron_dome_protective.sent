@@ -1,9 +1,0 @@
-{
-  "Prefab": "prefabs/iron_dome_protective.prefab",
-  "Title": "Iron Dome (Protective)",
-  "Description": "Engages interceptable targets but ignores the owner's own projectiles.",
-  "Category": "Iron Dome",
-  "IncludeCode": true,
-  "__references": [],
-  "__version": 0
-}
