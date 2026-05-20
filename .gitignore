@@ -30,3 +30,6 @@ Exports/
 
 # Local agent notes
 .claude/
+
+# Editor scratch
+*.scene_d
