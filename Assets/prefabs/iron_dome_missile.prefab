@@ -1,0 +1,36 @@
+{
+  "__version": 0,
+  "__guid": "a1b2c3d4-0001-0001-0001-000000000004",
+  "Name": "iron_dome_missile",
+  "Tags": "interceptor",
+  "Enabled": true,
+  "Position": "0,0,0",
+  "Rotation": "0,0,0,1",
+  "Scale": "1,1,1",
+  "NetworkMode": 2,
+  "Components": [
+    {
+      "__type": "Sandbox.SphereCollider",
+      "__version": 0,
+      "Enabled": true,
+      "Radius": 8.0,
+      "IsTrigger": false
+    },
+    {
+      "__type": "Sandbox.Rigidbody",
+      "__version": 0,
+      "Enabled": true,
+      "MotionEnabled": true,
+      "Gravity": false,
+      "Mass": 5.0,
+      "LinearDamping": 0.0,
+      "AngularDamping": 0.0
+    },
+    {
+      "__type": "IronDome.IronDomeMissile",
+      "__version": 0,
+      "Enabled": true
+    }
+  ],
+  "Children": []
+}
