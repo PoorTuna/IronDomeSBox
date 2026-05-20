@@ -1,0 +1,9 @@
+{
+  "Prefab": "prefabs/iron_dome_neutral.prefab",
+  "Title": "Iron Dome (Neutral)",
+  "Description": "Engages every interceptable target overhead.",
+  "Category": "Iron Dome",
+  "IncludeCode": true,
+  "__references": [],
+  "__version": 0
+}

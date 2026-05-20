@@ -5,7 +5,7 @@
   "Ident": "irondome",
   "Schema": 1,
   "IncludeSourceFiles": false,
-  "Resources": "Assets/prefabs/*.prefab;Assets/models/**;Assets/materials/**;Assets/sounds/**;Assets/icons/iron_dome*.png",
+  "Resources": "Assets/prefabs/*.prefab;Assets/models/**;Assets/materials/**;Assets/sounds/**;Assets/icons/iron_dome*.png;Assets/entities/*.sent",
   "PackageReferences": [],
   "EditorReferences": null,
   "Mounts": null,
