@@ -21,6 +21,7 @@
     "PerMapRanking": false,
     "LeaderboardType": "None",
     "CsProjName": "",
-    "StartupScene": null
+    "StartupScene": null,
+    "ParentPackage": "facepunch.sandbox"
   }
 }
