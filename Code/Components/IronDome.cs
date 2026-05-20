@@ -27,7 +27,6 @@ public sealed class IronDome : Component
 
     protected override void OnStart()
     {
-        TargetRegistry.Clear();
         _siren = Components.GetOrCreate<IronDomeSiren>();
         _missilesLeft = Mode == IronDomeMode.Admin ? int.MaxValue : IronDomeConVars.MissilesPerReload;
     }
