@@ -40,10 +40,9 @@ public sealed class IronDome : Component
         if ( !HandleReload() ) return;
 
         var hasTarget = false;
-        foreach ( var rb in Scene.GetAllComponents<Rigidbody>() )
+        foreach ( var go in EnumerateScanCandidates() )
         {
-            if ( !rb.IsValid ) continue;
-            var go = rb.GameObject;
+            if ( go is null || !go.IsValid ) continue;
             if ( WorldPosition.Distance( go.WorldPosition ) > EffectiveDetectionRadius ) continue;
             if ( !TargetFilter.IsValidTarget( this, go ) ) continue;
 
@@ -55,6 +54,18 @@ public sealed class IronDome : Component
         }
 
         _siren.UpdateSiren( hasTarget );
+    }
+
+    private IEnumerable<GameObject> EnumerateScanCandidates()
+    {
+        foreach ( var rb in Scene.GetAllComponents<Rigidbody>() )
+            if ( rb.IsValid ) yield return rb.GameObject;
+
+        if ( IronDomeConVars.TargetPlayers )
+        {
+            foreach ( var pc in Scene.GetAllComponents<PlayerController>() )
+                if ( pc.IsValid ) yield return pc.GameObject;
+        }
     }
 
     private bool HandleReload()
