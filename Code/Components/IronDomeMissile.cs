@@ -1,4 +1,5 @@
 using Sandbox;
+using System.Linq;
 
 namespace IronDome;
 
@@ -35,7 +36,7 @@ public sealed class IronDomeMissile : Component
     {
         if ( !_launched || _target is null || !_target.IsValid )
         {
-            GameObject.Destroy();
+            DestroyMissile();
             return;
         }
 
@@ -72,7 +73,39 @@ public sealed class IronDomeMissile : Component
 
         // TODO: spawn explosion VFX — assign an ExplosionPrefab [Property] and clone it here
 
+        DestroyMissile();
+    }
+
+    // Single shutdown path: detach particle trails so they fade naturally,
+    // then destroy the missile GameObject. Doing the detach here (while the
+    // missile is still alive) keeps the orphan in the active scene; running
+    // it from OnDestroy parks it in the System scene and crashes OnAwake on
+    // any newly-added component.
+    private void DestroyMissile()
+    {
+        DetachTrailChildren();
         GameObject.Destroy();
+    }
+
+    // Reparents particle-emitting children to the scene root and stops their
+    // emitters so already-spawned particles fade out naturally instead of
+    // vanishing the instant the missile is destroyed. A DelayedDestroy
+    // component cleans up each orphaned trail after the particle lifetime.
+    private void DetachTrailChildren()
+    {
+        foreach ( var child in GameObject.Children.ToList() )
+        {
+            child.SetParent( null, true );
+
+            foreach ( var c in child.Components.GetAll<Component>() )
+            {
+                if ( c.GetType().Name.EndsWith( "Emitter" ) )
+                    c.Enabled = false;
+            }
+
+            var killer = child.Components.GetOrCreate<DelayedDestroy>();
+            killer.Delay = 10f;
+        }
     }
 
     protected override void OnDestroy()
