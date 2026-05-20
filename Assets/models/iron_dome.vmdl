@@ -37,12 +37,27 @@
 						remaps = 
 						[
 							{
-								from = "iron_dome"
+								from = "iron_dome.vmat"
 								to = "materials/iron_dome.vmat"
 							},
 						]
 						use_global_default = true
 						global_default_material = "materials/iron_dome.vmat"
+					},
+				]
+			},
+			{
+				_class = "PhysicsShapeList"
+				children = 
+				[
+					{
+						_class = "PhysicsHullFromRender"
+						parent_bone = ""
+						surface_prop = "metal"
+						collision_tags = "solid"
+						faceMergeAngle = 20.0
+						maxHullVertices = 32
+						hull_mode = "SingleHull"
 					},
 				]
 			},

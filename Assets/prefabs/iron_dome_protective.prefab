@@ -1,9 +1,9 @@
 {
   "RootObject": {
-    "__guid": "e9e20312-7e41-4742-af83-626f95a5ab55",
+    "__guid": "a7acadc5-4d0d-4767-a01c-374df81ffabb",
     "__version": 2,
     "Flags": 0,
-    "Name": "iron_dome_protective (1)",
+    "Name": "iron_dome_protective",
     "Position": "0,0,0",
     "Rotation": "0,0,0,1",
     "Scale": "1,1,1",
@@ -17,7 +17,7 @@
     "Components": [
       {
         "__type": "Sandbox.ModelRenderer",
-        "__guid": "0674a373-4671-4475-923f-cb28a98d2460",
+        "__guid": "0ba79229-652a-44e8-900c-a57b12a6d1eb",
         "__enabled": true,
         "Flags": 0,
         "BodyGroups": 18446744073709551615,
@@ -44,7 +44,7 @@
       },
       {
         "__type": "Sandbox.ModelCollider",
-        "__guid": "09ebd59c-5b0f-4045-ba4f-85562df3c404",
+        "__guid": "7c004449-8b10-4ce3-ab90-aa967579fc9c",
         "__enabled": true,
         "Flags": 0,
         "ColliderFlags": 0,
@@ -69,7 +69,7 @@
       },
       {
         "__type": "IronDome.IronDome",
-        "__guid": "fbc6fda1-d841-45af-b16e-cde4a2b28bf0",
+        "__guid": "42258888-39b1-4099-b0a2-8ddda8ac9165",
         "__enabled": true,
         "Flags": 0,
         "MissilePrefab": {
@@ -86,7 +86,7 @@
       },
       {
         "__type": "IronDome.IronDomeSiren",
-        "__guid": "363a694c-4884-4117-b308-048f82a03bac",
+        "__guid": "fe7dd751-f616-40c0-96ae-87d932014bd7",
         "__enabled": true,
         "Flags": 0,
         "OnComponentDestroy": null,
@@ -98,23 +98,79 @@
       },
       {
         "__type": "IronDome.IronDomeHealth",
-        "__guid": "5a5eae7d-1a0e-42cb-b1a9-e021294f5e9e",
+        "__guid": "f1e68bcb-756f-45e8-a550-a1908f7551a5",
         "__enabled": true,
         "Flags": 0,
-        "Health": 1000,
+        "Health": 100,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
         "OnComponentFixedUpdate": null,
         "OnComponentStart": null,
         "OnComponentUpdate": null
+      },
+      {
+        "__type": "Sandbox.Rigidbody",
+        "__guid": "61438777-84cf-4d06-ab5d-6bae79a9d793",
+        "__enabled": true,
+        "Flags": 0,
+        "AngularDamping": 10,
+        "EnableImpactDamage": true,
+        "EnhancedCcd": false,
+        "Gravity": true,
+        "GravityScale": 1,
+        "ImpactDamage": 0,
+        "LinearDamping": 10,
+        "Locking": {
+          "X": false,
+          "Y": false,
+          "Z": false,
+          "Pitch": false,
+          "Yaw": false,
+          "Roll": false
+        },
+        "MassCenterOverride": "0,0,0",
+        "MassOverride": 50,
+        "MinImpactDamageSpeed": 500,
+        "MotionEnabled": true,
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null,
+        "OverrideMassCenter": false,
+        "RigidbodyFlags": 0,
+        "SleepThreshold": 2,
+        "StartAsleep": false
       }
     ],
-    "Children": []
+    "Children": [],
+    "__properties": {
+      "NetworkInterpolation": true,
+      "TimeScale": 1,
+      "WantsSystemScene": true,
+      "Metadata": {},
+      "NavMesh": {
+        "Enabled": false,
+        "IncludeStaticBodies": true,
+        "IncludeKeyframedBodies": true,
+        "EditorAutoUpdate": false,
+        "AgentHeight": 64,
+        "AgentRadius": 16,
+        "AgentStepSize": 18,
+        "AgentMaxSlope": 40,
+        "ExcludedBodies": "",
+        "IncludedBodies": "",
+        "DeferGeneration": false,
+        "CustomBounds": false
+      }
+    },
+    "__variables": []
   },
   "ResourceVersion": 2,
-  "ShowInMenu": false,
-  "MenuPath": null,
+  "ShowInMenu": true,
+  "MenuPath": "Iron Dome/Protective",
   "MenuIcon": null,
   "DontBreakAsTemplate": false,
   "__references": [],
