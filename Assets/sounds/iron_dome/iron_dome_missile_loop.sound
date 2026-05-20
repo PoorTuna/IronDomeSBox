@@ -1,0 +1,8 @@
+{
+  "Sounds": ["sounds/iron_dome/missile_loop.wav"],
+  "Volume": 0.8,
+  "Pitch": 1.0,
+  "DistanceMax": 18000.0,
+  "Loop": true,
+  "UI": false
+}

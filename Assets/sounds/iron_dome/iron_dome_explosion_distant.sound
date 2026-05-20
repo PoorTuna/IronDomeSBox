@@ -1,0 +1,8 @@
+{
+  "Sounds": ["sounds/iron_dome/explosion_distant.wav"],
+  "Volume": 5.0,
+  "Pitch": 1.0,
+  "DistanceMax": 80000.0,
+  "Loop": false,
+  "UI": false
+}

@@ -1,0 +1,8 @@
+{
+  "Sounds": ["sounds/iron_dome/explosion_close.wav"],
+  "Volume": 1.0,
+  "Pitch": 1.0,
+  "DistanceMax": 10000.0,
+  "Loop": false,
+  "UI": false
+}

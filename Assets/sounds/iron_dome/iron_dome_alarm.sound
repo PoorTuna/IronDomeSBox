@@ -1,0 +1,10 @@
+{
+  "Sounds": [
+    "sounds/iron_dome/iron_dome_alarm.wav"
+  ],
+  "Volume": 1.0,
+  "Pitch": 1.0,
+  "DistanceMax": 40000.0,
+  "Loop": false,
+  "UI": false
+}
