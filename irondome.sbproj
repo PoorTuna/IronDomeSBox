@@ -6,7 +6,7 @@
   "Schema": 1,
   "IncludeSourceFiles": false,
   "Resources": null,
-  "PackageReferences": [],
+  "PackageReferences": [ "facepunch.84mmmissile" ],
   "EditorReferences": null,
   "Mounts": null,
   "IsStandaloneOnly": false,
