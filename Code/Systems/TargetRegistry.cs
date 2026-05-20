@@ -29,6 +29,15 @@ public static class TargetRegistry
             _claimed.Remove( target );
             return false;
         }
+        // Self-heal: claim is stale if the dome no longer has a live missile
+        // tracking this target (e.g. missile destroyed without firing OnDestroy).
+        if ( !dome.ActiveMissiles.TryGetValue( target, out var missile )
+             || missile is null || !missile.IsValid )
+        {
+            _claimed.Remove( target );
+            dome.ActiveMissiles.Remove( target );
+            return false;
+        }
         return true;
     }
 }
