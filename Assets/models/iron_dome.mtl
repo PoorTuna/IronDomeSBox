@@ -1,0 +1,7 @@
+newmtl iron_dome
+map_Kd iron_dome_dif.png
+map_bump iron_dome_nrm.png
+Ns 50
+Ka 0.1 0.1 0.1
+Kd 0.8 0.8 0.8
+Ks 0.3 0.3 0.3
