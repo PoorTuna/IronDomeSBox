@@ -33,3 +33,6 @@ Exports/
 
 # Editor scratch
 *.scene_d
+
+# Track imported 84mm missile compiled assets (vendored from facepunch.84mmmissile)
+!Assets/models/weapons/sbox_ammo/**
