@@ -33,6 +33,7 @@ public sealed class IronDome : Component
 
     protected override void OnUpdate()
     {
+        if ( IsProxy ) return;
         if ( !_nextScan ) return;
         _nextScan = IronDomeConsts.ScanInterval;
 

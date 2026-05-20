@@ -11,7 +11,6 @@ public static class MissileFactory
         if ( dome.MissilePrefab is null ) { Log.Info( "MissileFactory: MissilePrefab is null" ); return null; }
 
         var spawnPos = dome.WorldPosition + Vector3.Up * IronDomeConsts.MissileSpawnHeight;
-        Log.Info( $"MissileFactory: cloning missile at {spawnPos}" );
         var missileGo = dome.MissilePrefab.Clone( new Transform( spawnPos ) );
         if ( missileGo is null ) { Log.Info( "MissileFactory: Clone returned null" ); return null; }
 
@@ -25,6 +24,8 @@ public static class MissileFactory
 
         missile.Dome = dome;
         missile.SetTarget( target );
+
+        missileGo.NetworkSpawn();
 
         TargetRegistry.Claim( dome, target );
         dome.ActiveMissiles[target] = missile;
