@@ -1,0 +1,7 @@
+{
+    "Title": "Iron Dome - IDF",
+    "Description": "IDF Iron Dome air defense system for s&box. Intercepts incoming projectiles tagged 'interceptable'. Includes three variants: Neutral, Protective, and Admin.",
+    "Type": "addon",
+    "Tags": [ "roleplay", "realism", "military" ],
+    "Schema": 1
+}
