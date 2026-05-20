@@ -22,6 +22,12 @@ public sealed class IronDomeSiren : Component
         {
             StopSiren();
         }
+
+        if ( _handle != null )
+        {
+            _handle.Position = WorldPosition;
+            _handle.Volume = IronDomeConVars.SirenVolume;
+        }
     }
 
     private void StartSiren()

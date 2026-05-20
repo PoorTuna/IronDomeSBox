@@ -11,6 +11,9 @@ public sealed class IronDome : Component
     [Property] public GameObject MissilePrefab { get; set; }
     [Property] public SoundEvent LeverSound { get; set; }
 
+    // Replicated so proxies can drive their local siren state.
+    [Sync] public bool HasActiveTarget { get; set; }
+
     public Dictionary<GameObject, IronDomeMissile> ActiveMissiles { get; } = new();
 
     private IronDomeSiren _siren;
@@ -42,6 +45,9 @@ public sealed class IronDome : Component
 
     protected override void OnUpdate()
     {
+        // Siren runs on every client off the replicated HasActiveTarget flag.
+        _siren?.UpdateSiren( HasActiveTarget );
+
         if ( IsProxy ) return;
 
         SyncAdminState();
@@ -65,7 +71,7 @@ public sealed class IronDome : Component
             break;
         }
 
-        _siren.UpdateSiren( hasTarget );
+        HasActiveTarget = hasTarget;
     }
 
     private void SyncAdminState()
@@ -102,12 +108,18 @@ public sealed class IronDome : Component
         if ( !IsAdmin && _missilesLeft <= 0 )
         {
             _reloading = true;
-            if ( LeverSound is not null )
-                Sound.Play( LeverSound, WorldPosition );
+            BroadcastLeverSound();
             _reloadComplete = SafeReloadTime;
             return false;
         }
 
         return true;
+    }
+
+    [Rpc.Broadcast]
+    private void BroadcastLeverSound()
+    {
+        if ( LeverSound is not null )
+            Sound.Play( LeverSound, WorldPosition );
     }
 }

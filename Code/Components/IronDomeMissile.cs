@@ -21,14 +21,19 @@ public sealed class IronDomeMissile : Component
     private const float DefaultMissileSpeed = 6000f;
     private static float SafeMissileSpeed => IronDomeConVars.MissileSpeed > 0f ? IronDomeConVars.MissileSpeed : DefaultMissileSpeed;
 
+    protected override void OnStart()
+    {
+        // OnStart runs on every client, including proxies — guarantees all
+        // players hear the launch + loop, not just the dome owner.
+        if ( LaunchSound is not null ) Sound.Play( LaunchSound, WorldPosition );
+        if ( LoopSound is not null ) _loopHandle = Sound.Play( LoopSound, WorldPosition );
+    }
+
     public void SetTarget( GameObject target )
     {
         if ( target is null || !target.IsValid ) return;
         _target = target;
         _launched = true;
-
-        if ( LaunchSound is not null ) Sound.Play( LaunchSound, WorldPosition );
-        if ( LoopSound is not null ) _loopHandle = Sound.Play( LoopSound, WorldPosition );
 
         var rb = Components.Get<Rigidbody>();
         if ( rb is null ) return;
@@ -40,8 +45,18 @@ public sealed class IronDomeMissile : Component
         WorldRotation = Rotation.LookAt( dir, Vector3.Up );
     }
 
+    protected override void OnUpdate()
+    {
+        // Keep each client's local loop handle pinned to the replicated missile transform.
+        if ( _loopHandle != null )
+            _loopHandle.Position = WorldPosition;
+    }
+
     protected override void OnFixedUpdate()
     {
+        // Movement + detonation logic is owner-only. Rigidbody/transform replicate to proxies.
+        if ( IsProxy ) return;
+
         if ( !_launched || _target is null || !_target.IsValid )
         {
             DestroyMissile();
@@ -62,25 +77,13 @@ public sealed class IronDomeMissile : Component
         rb.Velocity = dir * SafeMissileSpeed;
         WorldRotation = Rotation.LookAt( dir, Vector3.Up );
 
-        if ( _loopHandle != null )
-            _loopHandle.Position = WorldPosition;
-
         if ( WorldPosition.Distance( interceptPoint ) < IronDomeConsts.MissileExplosionDist )
             Detonate();
     }
 
     private void Detonate()
     {
-        if ( ExplosionCloseSound is not null )
-        {
-            var close = Sound.Play( ExplosionCloseSound, WorldPosition );
-            if ( close != null ) close.Pitch = Game.Random.Float( 0.95f, 1.05f );
-        }
-        if ( ExplosionDistantSound is not null )
-        {
-            var distant = Sound.Play( ExplosionDistantSound, WorldPosition );
-            if ( distant != null ) distant.Pitch = Game.Random.Float( 0.95f, 1.05f );
-        }
+        BroadcastExplosionSounds();
 
         // Players: route through IDamageable so respawn flow stays intact.
         // Props: hard delete the GameObject so they don't dribble out gibs that
@@ -111,8 +114,16 @@ public sealed class IronDomeMissile : Component
     // any newly-added component.
     private void DestroyMissile()
     {
-        DetachTrailChildren();
+        BroadcastDetachTrails();
         GameObject.Destroy();
+    }
+
+    // Trails must detach on every client, not just the owner, so particles
+    // fade naturally instead of being yanked when the networked destroy fires.
+    [Rpc.Broadcast]
+    private void BroadcastDetachTrails()
+    {
+        DetachTrailChildren();
     }
 
     // Reparents particle-emitting children to the scene root and stops their
@@ -133,6 +144,21 @@ public sealed class IronDomeMissile : Component
 
             var killer = child.Components.GetOrCreate<DelayedDestroy>();
             killer.Delay = 10f;
+        }
+    }
+
+    [Rpc.Broadcast]
+    private void BroadcastExplosionSounds()
+    {
+        if ( ExplosionCloseSound is not null )
+        {
+            var close = Sound.Play( ExplosionCloseSound, WorldPosition );
+            if ( close != null ) close.Pitch = Game.Random.Float( 0.95f, 1.05f );
+        }
+        if ( ExplosionDistantSound is not null )
+        {
+            var distant = Sound.Play( ExplosionDistantSound, WorldPosition );
+            if ( distant != null ) distant.Pitch = Game.Random.Float( 0.95f, 1.05f );
         }
     }
 
