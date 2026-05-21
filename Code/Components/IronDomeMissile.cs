@@ -86,15 +86,20 @@ public sealed class IronDomeMissile : Component
         BroadcastExplosionSounds();
 
         // Players: route through IDamageable so respawn flow stays intact.
+        // Never .Destroy() the player root — that nukes the connection's
+        // pawn and can cascade into every other player.
         // Props: hard delete the GameObject so they don't dribble out gibs that
         // re-enter the scan set and burn missiles forever.
         if ( _target is not null && _target.IsValid )
         {
-            if ( _target.Components.TryGet<PlayerController>( out _ )
-                 && _target.Components.TryGet<Component.IDamageable>( out var damageable, FindMode.EverythingInSelfAndChildren ) )
+            var isPlayer = _target.Components.TryGet<PlayerController>( out _ );
+            if ( isPlayer )
             {
-                var dmg = new DamageInfo( 9999, Dome?.GameObject, null );
-                damageable.OnDamage( dmg );
+                if ( _target.Components.TryGet<Component.IDamageable>( out var damageable, FindMode.EverythingInSelfAndChildren ) )
+                {
+                    var dmg = new DamageInfo( 9999, Dome?.GameObject, null );
+                    damageable.OnDamage( dmg );
+                }
             }
             else
             {
